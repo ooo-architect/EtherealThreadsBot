@@ -1,6 +1,7 @@
 import logging
 
 from aiogram import Bot, Router, F
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import IS_MEMBER, IS_NOT_MEMBER, ChatMemberUpdatedFilter
 from aiogram.types import ChatMemberUpdated
 from config import CHANNEL_ID, CHAT_ID
@@ -22,4 +23,9 @@ async def handle_chat_leave(event: ChatMemberUpdated):
         logging.info(
             f'Member kicked: Chat={event.chat.id} User={user.id}, {user.username} '
         )
-        # await bot.kick_chat_member(CHANNEL_ID, event.old_chat_member.user.id)
+
+        try:
+            await bot.kick_chat_member(CHANNEL_ID, event.old_chat_member.user.id)
+        except TelegramBadRequest:
+            logging.debug(f'Member kick failed')
+
